@@ -41,10 +41,48 @@ module svetodiodmig
         o_led[3:1] <= {$size(o_led[3:1]){led_on}};
         o_led[0] <= !led_on;
         
-    end
+    end;	
+					
+    
 endmodule
 
 
+
+
+module big_module
+
+(
+    input i_clk_n, 
+    input i_clk_p,
+    input i_rst,
+    output logic [3:0] o_led
+);
+
+
+   BUFG BUFG_inst (
+      .O(i_clk), 
+      .I(o_clk_ibufds) 
+   );
+
+
+   IBUFDS #(
+      .DIFF_TERM("TRUE"),       
+      .IBUF_LOW_PWR("FALSE"),      
+      .IOSTANDARD("LVDS") 
+   ) IBUFDS_inst (
+      .O(o_clk_ibufds),  
+      .I(i_clk_p),  
+      .IB(i_clk_n) 
+   );
+   
+   svetodiodmig LED
+   (
+     .i_clk (i_clk),
+     .i_rst (i_rst),
+     .o_led(o_led)
+    );
+
+endmodule
 
 
 
