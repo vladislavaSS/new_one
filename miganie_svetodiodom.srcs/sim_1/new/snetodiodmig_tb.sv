@@ -4,7 +4,7 @@ module svetodiodmig_tb
 #(
     parameter CLK_FREQUENCY = 50.0e6, parameter BLINK_PERIOD = 100e-6);
 
-    localparam T_CLK = int(1.0e9 / CLK_FREQUENCY);
+    localparam T_CLK = 1.0e9 / CLK_FREQUENCY;
 
     bit i_clk = 1'b0; bit i_rst = 1'b1;
 
