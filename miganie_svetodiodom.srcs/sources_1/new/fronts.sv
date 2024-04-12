@@ -7,13 +7,13 @@ module fronts
     )
 
     (
-    input i_clk
+    output bit o_nes,
+    output bit o_pos,
+    input i_clk,
+    input bit o_signal,
+    input bit o_signal_dly
     );
     
-    bit o_pos;
-    bit  o_nes;
-    reg  o_signal;
-    reg  o_signal_dly;
 
     always_ff@(posedge i_clk)
     begin
@@ -22,14 +22,20 @@ module fronts
 
     always_comb
     begin
-        if (~o_signal_dly * o_signal == 1)
+        if (o_signal == 1)
         begin
             o_pos <= 1;
-        end;  
-
-        if (o_signal_dly * ~o_signal == 1)
-        begin
+        end 
+        else begin
             o_nes <= 1;
+        end;
+
+        if (o_signal_dly == 1)
+        begin
+            o_pos <= 0;
+        end 
+        else begin
+            o_nes <= 0;
         end;
     end;   
 
