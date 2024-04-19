@@ -13,7 +13,7 @@ bit [1:0] L1, L2 = '0;
 // logic next_signal = '0;
 // logic signal = '0;
  
- vlada_pr #(
+ lb3_fsm #(
     .T_CLK(T_CLK)
   ) 
   UUT_2(
