@@ -6,27 +6,33 @@ module source#(
  (
     input i_rst,
     input i_clk,
-//    output s_data,
-//    output s_valid,
     input s_ready,
-     
+    
+    input int Length, //for input length of data
+    input int Length_buff,
+    
     output logic s_valid = '0,
     output logic [7:0] s_data = '0
     );
     
-    localparam int C_MAX_DATA = 10;
+//     if (Length > 0) begin  
+//        assign Length_buff = Length; end
+     
+    int C_MAX_DATA;
+    
+    //localparam int C_MAX_DATA = 10;
     localparam int C_MAX_IDLE = 50;
     localparam int C_MAX_PSE = 10;
     
-    localparam int C_DATA = $ceil($clog2(C_MAX_DATA - 1));
+    int C_DATA = $ceil($clog2(C_MAX_DATA - 1)); //localparam
     localparam int C_IDLE = $ceil($clog2(C_MAX_IDLE - 1));
     localparam int C_PSE = $ceil($clog2(C_MAX_PSE - 1));
     
-    logic [C_DATA - 1 : 0] q_data_cnt = '0;
+    logic [31 : 0] q_data_cnt = '0; //C_DATA - 1
     logic [C_IDLE - 1 : 0] q_pse_cnt = '0;
     logic [C_PSE - 1 : 0] q_idle_cnt = '0;
     logic [7:0] m_data = '0; 
-    
+
     
 	typedef enum {
       S0 = 0,
@@ -40,14 +46,21 @@ module source#(
     
     signals signal = S0;
 	
+	
+	
 	always_ff @(posedge i_clk) begin
-	if (i_rst)
+	if (i_rst) 
 	   signal <= S0;
 	else
-      case (signal)
-      
+//	   if (Length < 0)//(m_data == s_data && s_valid == 1)   
+//            assign Length_buff = Length; 
+       case (signal)
          S0:
-            begin
+            begin 
+//                if (m_data == s_data)
+//                    assign Length_buff = Length;
+                C_MAX_DATA <= Length_buff;
+                
                 signal = (s_ready) ? S1 : S0; 
                 s_valid <= '0;
                 q_data_cnt <= '0;
@@ -85,8 +98,14 @@ module source#(
             s_valid <= !(s_valid && s_ready);
             s_data  <= m_data; end
          S6: 
-            begin signal = (C_IDLE - 1 == q_idle_cnt) ? S0 : S6; 
-            q_idle_cnt <= (q_idle_cnt == C_MAX_PSE - 1) ? '0 : (q_idle_cnt + 1); end
+            begin 
+            if (m_data == s_data)
+                    assign Length_buff = Length;
+            
+            signal = (C_IDLE - 1 == q_idle_cnt) ? S0 : S6; 
+            q_idle_cnt <= (q_idle_cnt == C_MAX_PSE - 1) ? '0 : (q_idle_cnt + 1);
+            
+                 end
          default: signal <= S0;
        
       endcase;
@@ -119,7 +138,7 @@ module source#(
 		.i_crc_ini_vld ('0     ), // Input Initial Valid
 		.i_crc_ini_dat ('0     ), // Input Initial Value
 		.i_crc_wrd_vld (s_valid && s_ready), // Word Data Valid Flag 
-		.o_crc_wrd_rdy (/**/), // Ready To Recieve Word Data
+        .o_crc_wrd_rdy (       ), // Ready To Recieve Word Data
 		.i_crc_wrd_dat (s_data ), // Word Data
 		.o_crc_res_vld (m_valid), // Output Flag of Validity, Active High for Each WORD_COUNT Number
 		.o_crc_res_dat (m_data )  // Output CRC from Each Input Word
