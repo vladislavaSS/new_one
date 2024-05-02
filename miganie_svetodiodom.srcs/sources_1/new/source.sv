@@ -12,7 +12,7 @@ module source#(
     input m_valid,
 
     
-    input [G_CNT_WIDTH - 1 : 0] Length, //for input length of data
+    input logic [G_CNT_WIDTH - 1 : 0] Length, //for input length of data
     
     output logic s_valid = '0,
     output logic [W - 1 : 0] s_data = '0
@@ -20,7 +20,7 @@ module source#(
      
     //int C_MAX_DATA;
     
-    int Length_buff;
+    logic [G_CNT_WIDTH - 1 : 0] Length_buff = '0;
     
     //localparam int C_MAX_DATA = 10; //  
     localparam int C_MAX_IDLE = 20;
@@ -79,14 +79,20 @@ module source#(
                 signal  <= (s_valid && s_ready) ? S3 : S2;
                 s_valid <= !(s_valid && s_ready);
 //                s_data  <= C_MAX_DATA;
-                s_data  <= (s_valid && s_ready) ? '0 : Length_buff;
+                s_data  <= Length_buff;
+                
+                if (s_valid && s_ready) begin
+                    s_data <= q_data_cnt; 
+                    q_data_cnt <= q_data_cnt + 1;end
+                    
+                //s_data <= (s_valid && s_ready) ? 1 : Length_buff;
             end
          S3:
             begin
 //                signal  <= ((q_data_cnt == C_MAX_DATA - 1) && (s_valid && s_ready)) ? S4: S3; 
 //                s_valid <= !((q_data_cnt == C_MAX_DATA - 1) && (s_valid && s_ready)); 
-                signal  <= ((q_data_cnt == Length_buff) && (s_valid && s_ready)) ? S4: S3; 
-                s_valid <= !((q_data_cnt == Length_buff) && (s_valid && s_ready)); 
+                signal  <= ((q_data_cnt == Length_buff + 1) && (s_valid && s_ready)) ? S4: S3; 
+                s_valid <= !((q_data_cnt == Length_buff + 1) && (s_valid && s_ready)); 
                 
                 /*s_data  <= 72; */
                 
