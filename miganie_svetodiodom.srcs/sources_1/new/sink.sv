@@ -4,6 +4,7 @@ module sink#(
  parameter G_BYT = 1,
  parameter W = 8*G_BYT)
  (
+<<<<<<< HEAD
 input i_rst,
 input i_clk,
 input si_valid,
@@ -13,6 +14,18 @@ output si_ready,
 output o_good,
 output o_error
     );
+=======
+   input i_rst,
+   input i_clk,
+   input s_valid,
+   input [7 : 0] s_data, 
+   
+   
+   output s_ready,
+   output o_good,
+   output o_error
+      );
+>>>>>>> 2f9bf84091cd5df42bf9d792ee2f5db05c601083
     
     
     crc #(

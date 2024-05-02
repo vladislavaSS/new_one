@@ -9,6 +9,8 @@ module source#(
     input i_rst,
     input i_clk,
     input s_ready,
+    input m_valid,
+
     
     input logic [G_CNT_WIDTH - 1 : 0] Length, //for input length of data
     
