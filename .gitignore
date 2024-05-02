@@ -29,10 +29,3 @@
 **/*.svg
 # **/*.txt
 
-# ignore all files in IP folders except XCI files (XCIX shouldn't be tracked 'cause they can be too big)
-/**/ip/**/*.*
-!/**/ip/*/*.xci
-/**/LaTeX/**/*.*
-!/**/LaTeX/**/*.py
-!/**/LaTeX/**/*.tex
-/**/.idea
