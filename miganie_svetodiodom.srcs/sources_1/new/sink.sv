@@ -6,11 +6,10 @@ module sink#(
  (
 input i_rst,
 input i_clk,
-input s_valid,
-input [7 : 0] s_data, 
+input si_valid,
+input [W - 1 : 0] si_data, 
 
-
-output s_ready,
+output si_ready,
 output o_good,
 output o_error
     );
@@ -32,9 +31,9 @@ output o_error
 		.i_crc_s_rst_p (i_rst), // Sync Reset, Active High. Reset CRC To Initial Value.
 		.i_crc_ini_vld ('0     ), // Input Initial Valid
 		.i_crc_ini_dat ('0     ), // Input Initial Value
-		.i_crc_wrd_vld (s_valid), // Word Data Valid Flag 
-		.o_crc_wrd_rdy (s_ready), // Ready To Recieve Word Data
-		.i_crc_wrd_dat (s_data ), // Word Data
+		.i_crc_wrd_vld (si_valid), // Word Data Valid Flag 
+		.o_crc_wrd_rdy (si_ready), // Ready To Recieve Word Data
+		.i_crc_wrd_dat (si_data ), // Word Data
 		.o_crc_res_vld (m_valid), // Output Flag of Validity, Active High for Each WORD_COUNT Number
 		.o_crc_res_dat (m_data )  // Output CRC from Each Input Word
 	);

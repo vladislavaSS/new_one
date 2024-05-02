@@ -37,9 +37,9 @@ axis_data_fifo_0 FIFO (
 		.s_axis_aclk        (i_aclk),    // input wire s_axis_aclk
 		
 		.s_axis_tready      (s_axis.tready), // output wire s_axis_tready
-		.s_axis_tvalid      (s_axis.tvalid), // input wire s_axis_tvalid
+		.s_axis_tvalid      (s_axis_tvali), // input wire s_axis_tvalid
 		.s_axis_tlast       (s_axis.tlast ), // input wire s_axis_tlast
-		.s_axis_tdata       (s_axis.tdata ), // input wire [7 : 0] s_axis_tdata
+		.s_axis_tdata       (s_axis_tdata), // input wire [7 : 0] s_axis_tdata
 		
 		.m_axis_tready      (m_axis.tready), // input wire m_axis_tready
 		.m_axis_tvalid      (m_axis.tvalid), // output wire m_axis_tvalid
@@ -59,12 +59,12 @@ axis_data_fifo_0 FIFO (
     (
         .i_rst (i_rst_src),  
         .i_clk (i_clk),  
-        .s_data (s_data_src),
-        .s_valid (s_valid_src),
-        .s_ready (s_axis.tready),
+        .s_data (s_axis.tdata),
+        .s_valid (s_axis.tvalid),
+        .s_ready (s_axis.tready)
         
-        .m_valid (s_axis.tvalid),     
-        .m_data (s_axis.tdata)
+        //.m_valid (s_axis.tvalid)
+        //.m_data (s_axis.tdata)
     );
 
     sink #(
@@ -74,9 +74,9 @@ axis_data_fifo_0 FIFO (
     (
         .i_rst (i_rst_snk),
         .i_clk (i_clk),
-        .s_valid(m_axis.tvalid),
-        .s_data (m_axis.tdata ),
-        .s_ready(m_axis.tready),
+        .si_valid(m_axis.tvalid),
+        .si_data (m_axis.tdata ),
+        .si_ready(m_axis.tready),
         .o_good(o_good_top),
         .o_error(o_error_top)
     );
