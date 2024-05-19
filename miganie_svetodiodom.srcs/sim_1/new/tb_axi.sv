@@ -1,16 +1,16 @@
 `timescale 1ns / 1ps
 
 // simple AXIS interface
-interface if_axis #(parameter int N = 1) ();
+//interface if_axis #(parameter int N = 1) ();
 
-	localparam W = 8 * N; // TDATA bit width (N - number of bytes)
+//	localparam W = 8 * N; // TDATA bit width (N - number of bytes)
 	
-	logic         tready;
-	logic         tvalid;
-	logic         tlast ;
-	logic [W-1:0] tdata ;
+//	logic         tready;
+//	logic         tvalid;
+//	logic         tlast ;
+//	logic [W-1:0] tdata ;
 	
-endinterface
+//endinterface
 
 
 module tb_axi #(
