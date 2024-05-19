@@ -132,7 +132,7 @@ module source#(
 		.i_crc_ini_vld ('0     ), // Input Initial Valid
 		.i_crc_ini_dat ('0     ), // Input Initial Value
 		.i_crc_wrd_vld ((m_axis.tvalid && m_axis.tready && signal != S0 && signal != S1) /*|| (s_valid && s_ready && signal == S2)*/), // Word Data Valid Flag 
-        .o_crc_wrd_rdy (       ), // Ready To Recieve Word Data
+      .o_crc_wrd_rdy (       ), // Ready To Recieve Word Data
 		.i_crc_wrd_dat (m_axis.tdata ), // Word Data
 		.o_crc_res_vld (m_valid), // Output Flag of Validity, Active High for Each WORD_COUNT Number
 		.o_crc_res_dat (m_data )  // Output CRC from Each Input Word

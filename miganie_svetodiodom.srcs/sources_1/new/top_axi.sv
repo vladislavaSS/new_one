@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 
+
 module top_axi
 #(
  parameter int G_MAX_DATA = 10,
@@ -22,8 +23,24 @@ module top_axi
  output o_error_top
  );
 
-if_axis #(.N(G_BYT)) sl_axis (); // создание интерфейса 
 if_axis #(.N(G_BYT)) ms_axis ();
+if_axis #(.N(G_BYT)) sl_axis (); // создание интерфейса
+
+   (* keep_hierarchy="yes" *) 
+    source #(
+        .G_BYT(G_BYT),
+        .W (W)
+        ) SOURCE
+    (
+        .i_rst   (i_rst [0]    ),  
+        .i_clk   (i_clk        ), 
+        .m_axis  (ms_axis      ),
+        .Length  (G_LENGTH     )
+        /*.s_data  (s_axis.tdata ),
+        .s_valid (s_axis.tvalid),
+        .s_ready (s_axis.tready),
+        .s_last  (s_axis.tlast )*/
+    );
 
 (* keep_hierarchy="yes" *) 
  axis_fifo #(
@@ -54,21 +71,7 @@ if_axis #(.N(G_BYT)) ms_axis ();
 
     );
   
-   (* keep_hierarchy="yes" *) 
-    source #(
-        .G_BYT(G_BYT),
-        .W (W)
-        ) SOURCE
-    (
-        .i_rst   (i_rst [0]    ),  
-        .i_clk   (i_clk        ), 
-        .m_axis  (ms_axis      ),
-        .Length  (G_LENGTH     )
-        /*.s_data  (s_axis.tdata ),
-        .s_valid (s_axis.tvalid),
-        .s_ready (s_axis.tready),
-        .s_last  (s_axis.tlast )*/
-    );
+
 
    (* keep_hierarchy="yes" *) 
     sink #(
