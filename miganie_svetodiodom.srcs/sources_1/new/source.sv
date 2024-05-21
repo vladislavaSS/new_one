@@ -16,7 +16,7 @@ module source#(
     
     logic [G_CNT_WIDTH - 1 : 0] Length_buff = '0;
     
-    localparam int C_MAX_IDLE = 20;
+    localparam int C_MAX_IDLE = 10; 
     localparam int C_MAX_PSE = 10;
     
     localparam int C_IDLE = $ceil($clog2(C_MAX_IDLE + 1));
@@ -28,6 +28,7 @@ module source#(
     logic [C_IDLE - 1 : 0] q_idle_cnt = '0;
     logic [W - 1 : 0] m_data = '0;
     logic m_valid;
+    logic q_clear = '0;  
 
 	typedef enum {
       S0 = 0,  // Ready
@@ -49,8 +50,8 @@ module source#(
 	
 	
 	always_ff @(posedge i_clk) begin
-	if (i_rst) 
-	   signal <= S0;
+	if (i_rst) begin
+	   signal <= S0; /* q_clear <= 1; */ end
 	else
        case (signal)
          S0:
@@ -60,6 +61,7 @@ module source#(
                 q_data_cnt <=  1; 
                 q_pse_cnt  <= '0;
                 q_idle_cnt <= '0;
+                /* q_clear <= '0; */
             end
          S1: 
             begin
@@ -98,12 +100,17 @@ module source#(
                   m_axis.tlast <= '1;
                   m_axis.tvalid <= !(m_axis.tvalid && m_axis.tready);
                   m_axis.tdata  <= m_data;
+                  /* q_clear <= 1;  */
             end
          S6: 
             begin 
-                  signal = (C_MAX_IDLE - 1 == q_idle_cnt) ? S0 : S6; 
-                  m_axis.tlast <= '0;
-                  q_idle_cnt <= (q_idle_cnt == C_MAX_IDLE - 1) ? '0 : (q_idle_cnt + 1);
+                  if (C_MAX_IDLE - 1 == q_idle_cnt) begin
+                      signal <= S0;
+                      m_axis.tlast <= 0; 
+                  end 
+
+                  q_idle_cnt <= q_idle_cnt + 1;
+                  /* q_clear <= '0; */ 
     
               if (m_data == m_axis.tdata)
                        Length_buff = Length;
@@ -128,11 +135,11 @@ module source#(
 		.NUM_STAGES (2   )  // Number of Register Stages, Equivalent Latency in Module. Minimum is 1, Maximum is 3.
 	) CRC (
 		.i_crc_a_clk_p (i_clk  ), // Rising Edge Clock
-		.i_crc_s_rst_p (m_axis.tvalid && m_axis.tready && signal == S5), // Sync Reset, Active High. Reset CRC To Initial Value.
+		.i_crc_s_rst_p (/* q_clear */m_axis.tvalid && m_axis.tready && signal == S5), // Sync Reset, Active High. Reset CRC To Initial Value.
 		.i_crc_ini_vld ('0     ), // Input Initial Valid
 		.i_crc_ini_dat ('0     ), // Input Initial Value
 		.i_crc_wrd_vld ((m_axis.tvalid && m_axis.tready && signal != S0 && signal != S1) /*|| (s_valid && s_ready && signal == S2)*/), // Word Data Valid Flag 
-      .o_crc_wrd_rdy (       ), // Ready To Recieve Word Data
+        .o_crc_wrd_rdy (       ), // Ready To Recieve Word Data
 		.i_crc_wrd_dat (m_axis.tdata ), // Word Data
 		.o_crc_res_vld (m_valid), // Output Flag of Validity, Active High for Each WORD_COUNT Number
 		.o_crc_res_dat (m_data )  // Output CRC from Each Input Word

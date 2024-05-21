@@ -22,4 +22,6 @@ module top_axi_tb#(
 
   always #(T_CLK) i_clk = ~i_clk;
   
+  //initial begin #(T_CLK*30); i_rst = 3'b001; #(T_CLK*10); i_rst = 3'b000; /*#(T_CLK*120); i_rst = 3'b100; #(T_CLK*10); i_rst = 3'b000; */end
+  
 endmodule
