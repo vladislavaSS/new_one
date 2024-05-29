@@ -20,7 +20,9 @@ module top_axi
 //input s_ready_src,
  
  output o_good_top,
- output o_error_top
+ output o_error_top,
+ output o_err_mis_tlast_top,
+ output o_err_unx_tlast_top
  );
 
 if_axis #(.N(G_BYT)) ms_axis ();
@@ -87,7 +89,10 @@ if_axis #(.N(G_BYT)) sl_axis (); // создание интерфейса
         .si_last  (m_axis.tlast ),
         .si_ready (m_axis.tready),*/
         .o_good   (o_good_top   ),
-        .o_error  (o_error_top  )
+        .o_error  (o_error_top  ),
+        .o_err_mis_tlast (o_err_mis_tlast_top),
+        .o_err_unx_tlast (o_err_unx_tlast_top)
+
     );
 
     //assign o_good = o_good_top;

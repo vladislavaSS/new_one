@@ -1,5 +1,4 @@
 `timescale 1ns / 1ps
-
 module source#(
  parameter int G_MAX_DATA  = 10,
  parameter int G_CNT_WIDTH = $ceil($clog2(G_MAX_DATA + 1)),
@@ -16,7 +15,7 @@ module source#(
     
     logic [G_CNT_WIDTH - 1 : 0] Length_buff = '0;
     
-    localparam int C_MAX_IDLE = 10; 
+    localparam int C_MAX_IDLE = 20;
     localparam int C_MAX_PSE = 10;
     
     localparam int C_IDLE = $ceil($clog2(C_MAX_IDLE + 1));
@@ -28,16 +27,14 @@ module source#(
     logic [C_IDLE - 1 : 0] q_idle_cnt = '0;
     logic [W - 1 : 0] m_data = '0;
     logic m_valid;
-    logic q_clear = '0;  
-
 	typedef enum {
-      S0 = 0,  // Ready
-      S1 = 1,  // Header    
-      S2 = 2,  // Length    
-      S3 = 3,  // Payload   
-      S4 = 4,  // CRC_PAUSE 
-      S5 = 5,  // CRC_DATA      
-      S6 = 6   // Idle      
+      S0 = 0,  
+      S1 = 1,  
+      S2 = 2,  
+      S3 = 3,  
+      S4 = 4,  
+      S5 = 5,    
+      S6 = 6   
     } signals;
     
     signals signal = S0;
@@ -50,8 +47,8 @@ module source#(
 	
 	
 	always_ff @(posedge i_clk) begin
-	if (i_rst) begin
-	   signal <= S0; /* q_clear <= 1; */ end
+	if (i_rst) 
+	   signal <= S0;
 	else
        case (signal)
          S0:
@@ -61,7 +58,6 @@ module source#(
                 q_data_cnt <=  1; 
                 q_pse_cnt  <= '0;
                 q_idle_cnt <= '0;
-                /* q_clear <= '0; */
             end
          S1: 
             begin
@@ -100,18 +96,18 @@ module source#(
                   m_axis.tlast <= '1;
                   m_axis.tvalid <= !(m_axis.tvalid && m_axis.tready);
                   m_axis.tdata  <= m_data;
-                  /* q_clear <= 1;  */
             end
          S6: 
             begin 
                   if (C_MAX_IDLE - 1 == q_idle_cnt) begin
-                      signal <= S0;
-                      m_axis.tlast <= 0; 
-                  end 
-
+                     signal <= S0;
+                     m_axis.tlast <= '0;
+                  end
+                  /* signal = (C_MAX_IDLE - 1 == q_idle_cnt) ? S0 : S6; 
+                  m_axis.tlast <= '0;
+                  q_idle_cnt <= (q_idle_cnt == C_MAX_IDLE - 1) ? '0 : (q_idle_cnt + 1);*/
                   q_idle_cnt <= q_idle_cnt + 1;
-                  /* q_clear <= '0; */ 
-    
+
               if (m_data == m_axis.tdata)
                        Length_buff = Length;
             end
@@ -123,26 +119,26 @@ module source#(
 
 
     crc #(
-		.POLY_WIDTH (W   ), // Size of The Polynomial Vector
-		.WORD_WIDTH (W   ), // Size of The Input Words Vector
-		.WORD_COUNT (0   ), // Number of Words To Calculate CRC, 0 - Always Calculate CRC On Every Input Word
-		.POLYNOMIAL ('hD5), // Polynomial Bit Vector
-		.INIT_VALUE ('1  ), // Initial Value
-		.CRC_REF_IN ('0  ), // Beginning and Direction of Calculations: 0 - Starting With MSB-First; 1 - Starting With LSB-First
-		.CRC_REFOUT ('0  ), // Determines Whether The Inverted Order of The Bits of The Register at The Entrance to The Xor Element
-		.BYTES_RVRS ('0  ), // Input Word Byte Reverse
-		.XOR_VECTOR ('0  ), // CRC Final Xor Vector
-		.NUM_STAGES (2   )  // Number of Register Stages, Equivalent Latency in Module. Minimum is 1, Maximum is 3.
+		.POLY_WIDTH (W   ), 
+		.WORD_WIDTH (W   ), 
+		.WORD_COUNT (0   ), 
+		.POLYNOMIAL ('hD5),
+		.INIT_VALUE ('1  ), 
+		.CRC_REF_IN ('0  ), 
+		.CRC_REFOUT ('0  ), 
+		.BYTES_RVRS ('0  ), 
+		.XOR_VECTOR ('0  ), 
+		.NUM_STAGES (2   )  
 	) CRC (
-		.i_crc_a_clk_p (i_clk  ), // Rising Edge Clock
-		.i_crc_s_rst_p (/* q_clear */m_axis.tvalid && m_axis.tready && signal == S5), // Sync Reset, Active High. Reset CRC To Initial Value.
-		.i_crc_ini_vld ('0     ), // Input Initial Valid
-		.i_crc_ini_dat ('0     ), // Input Initial Value
-		.i_crc_wrd_vld ((m_axis.tvalid && m_axis.tready && signal != S0 && signal != S1) /*|| (s_valid && s_ready && signal == S2)*/), // Word Data Valid Flag 
-        .o_crc_wrd_rdy (       ), // Ready To Recieve Word Data
-		.i_crc_wrd_dat (m_axis.tdata ), // Word Data
-		.o_crc_res_vld (m_valid), // Output Flag of Validity, Active High for Each WORD_COUNT Number
-		.o_crc_res_dat (m_data )  // Output CRC from Each Input Word
+		.i_crc_a_clk_p (i_clk  ),
+		.i_crc_s_rst_p (/*q_clear*/m_axis.tvalid && m_axis.tready && signal == S5),
+		.i_crc_ini_vld ('0     ), 
+		.i_crc_ini_dat ('0     ), 
+		.i_crc_wrd_vld ((m_axis.tvalid && m_axis.tready && signal != S0 && signal != S1) /*|| (s_valid && s_ready && signal == S2)*/), 
+      .o_crc_wrd_rdy (       ), 
+		.i_crc_wrd_dat (m_axis.tdata ), 
+		.o_crc_res_vld (m_valid), 
+		.o_crc_res_dat (m_data ) 
 	);
 	 
      
