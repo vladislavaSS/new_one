@@ -1,20 +1,8 @@
 `timescale 1ns / 1ps
 
-/*interface if_axis #(parameter int N = 1) ();
-
- localparam W = 8 * N;
- 
- logic         tready;
- logic         tvalid;
- logic         tlast;
- logic [W-1:0] tdata;
- 
- modport m (input tready, output tvalid, tlast, tdata);
- modport s (output tready, input tvalid, tlast, tdata);
-
-endinterface : if_axis*/
-
 module sink_tb#(
+ parameter logic [G_CNT_WIDTH - 1 : 0] Length = 10,
+ parameter int G_CNT_WIDTH = 8,
  parameter G_BYT = 1,
  parameter W = 8*G_BYT
     );
@@ -36,24 +24,6 @@ module sink_tb#(
     q_valid <= s_axis.tvalid;
     q_data  <= s_axis.tdata;
  end
- 
- 
- /*task t_hsk;
-  input bit [W-1:0] VALUE;
-  input int         SAMPLE_RATE;
-  input bit         TLAST_ENA;
-  begin
-    s_axis.tvalid = '1;
-    s_axis.tlast  = TLAST_ENA;
-    s_axis.tdata  = VALUE;
-    do begin
-      #T_CLK;
-    end while (!(s_axis.tvalid));
-    s_axis.tvalid = '0;
-    s_axis.tlast  = '0;
-    #((SAMPLE_RATE-1)*T_CLK);
-  end
-endtask : t_hsk*/
 
  
  sink #(

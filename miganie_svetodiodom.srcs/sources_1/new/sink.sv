@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
 module sink#(
-  parameter int G_MAX_DATA = 10,
-  parameter int G_CNT_WIDTH = $ceil($clog2(G_MAX_DATA + 1)),
+  parameter logic [G_CNT_WIDTH - 1 : 0] Length = 10,
+  parameter int G_CNT_WIDTH = 8,//$ceil($clog2(Length + 1)),
   parameter G_BYT = 1,
   parameter W = 8*G_BYT
  )

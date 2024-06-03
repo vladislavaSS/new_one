@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 module source#(
- parameter int G_MAX_DATA  = 10,
- parameter int G_CNT_WIDTH = $ceil($clog2(G_MAX_DATA + 1)),
+ parameter logic [G_CNT_WIDTH - 1 : 0] Length/*G_MAX_DATA*/  = 10,
+ parameter int G_CNT_WIDTH = 8, //$ceil($clog2(G_MAX_DATA + 1)),
  parameter     G_BYT       = 1,
  parameter     W           = 8*G_BYT)
  (
@@ -10,9 +10,10 @@ module source#(
     
     if_axis.m m_axis,
         
-    input logic [G_CNT_WIDTH - 1 : 0] Length //for input length of data
+    input logic [G_CNT_WIDTH - 1 : 0] length// = Length //for input length of data
     );
     
+    //logic [G_CNT_WIDTH - 1 : 0] length = Length;
     logic [G_CNT_WIDTH - 1 : 0] Length_buff = '0;
     
     localparam int C_MAX_IDLE = 20;
@@ -43,6 +44,7 @@ module source#(
       m_axis.tvalid = '0;
       m_axis.tdata = '0;
       m_axis.tlast = '0;
+      //length = Length;
     end
 	
 	
@@ -63,7 +65,7 @@ module source#(
             begin
                 signal <= (m_axis.tvalid && m_axis.tready) ? S2 : S1;
                 if (Length_buff == 0)
-                    Length_buff <= Length;
+                    Length_buff <= length;
                 
                 m_axis.tvalid <= !(m_axis.tvalid && m_axis.tready);
                 m_axis.tdata  <= 72;
@@ -109,7 +111,7 @@ module source#(
                   q_idle_cnt <= q_idle_cnt + 1;
 
               if (m_data == m_axis.tdata)
-                       Length_buff = Length;
+                       Length_buff = length;
             end
             
          default: signal <= S0;

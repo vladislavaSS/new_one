@@ -3,21 +3,16 @@
 
 module top_axi
 #(
- parameter int G_MAX_DATA = 10,
- parameter int G_CNT_WIDTH = $ceil($clog2(G_MAX_DATA + 1)),
+ parameter logic [G_CNT_WIDTH - 1 : 0] Length = 10,
+ parameter int G_CNT_WIDTH = 8,//$ceil($clog2(G_MAX_DATA + 1)),
  parameter G_BYT = 1,
- parameter W = 8*G_BYT, // ns // TB constants
- parameter logic [G_CNT_WIDTH-1:0] G_LENGTH = G_MAX_DATA // LENGTH of data pack
+ parameter W = 8*G_BYT // ns // TB constants
+ //parameter logic [G_CNT_WIDTH-1:0] G_LENGTH = G_MAX_DATA // LENGTH of data pack
  )
 (
- input i_clk,
+ input       i_clk,
  input [2:0] i_rst,
-// input i_rst_fif,
-// input i_rst_src,
-// input i_rst_snk,
-// input s_data_src, 
-// input s_valid_src,
-//input s_ready_src,
+ input /*reg [7:0]*/ logic [G_CNT_WIDTH - 1 : 0] i_lenght,
  
  output o_good_top,
  output o_error_top,
@@ -31,17 +26,14 @@ if_axis #(.N(G_BYT)) sl_axis (); // создание интерфейса
    (* keep_hierarchy="yes" *) 
     source #(
         .G_BYT(G_BYT),
-        .W (W)
+        .W (W),
+        .Length(Length)
         ) SOURCE
     (
         .i_rst   (i_rst [0]    ),  
         .i_clk   (i_clk        ), 
         .m_axis  (ms_axis      ),
-        .Length  (G_LENGTH     )
-        /*.s_data  (s_axis.tdata ),
-        .s_valid (s_axis.tvalid),
-        .s_ready (s_axis.tready),
-        .s_last  (s_axis.tlast )*/
+        .length  (i_length/*10*/           )
     );
 
 (* keep_hierarchy="yes" *) 
@@ -78,16 +70,13 @@ if_axis #(.N(G_BYT)) sl_axis (); // создание интерфейса
    (* keep_hierarchy="yes" *) 
     sink #(
         .G_BYT(G_BYT),
-        .W (W)
+        .W (W),
+        .Length(Length)
         ) SINK
     (
         .i_rst    (i_rst [2]    ),
         .i_clk    (i_clk        ),
         .s_axis   (sl_axis       ),
-        /*.si_valid (m_axis.tvalid),
-        .si_data  (m_axis.tdata ),
-        .si_last  (m_axis.tlast ),
-        .si_ready (m_axis.tready),*/
         .o_good   (o_good_top   ),
         .o_error  (o_error_top  ),
         .o_err_mis_tlast (o_err_mis_tlast_top),
@@ -95,7 +84,5 @@ if_axis #(.N(G_BYT)) sl_axis (); // создание интерфейса
 
     );
 
-    //assign o_good = o_good_top;
-    //assign o_error = o_error_top;
 
 endmodule
