@@ -7,9 +7,9 @@ module top_axil(
  if_axil.s s_axil;
 );
 
- logic o_good,        
-       o_err_mis_tlast,  
-       o_err_unx_tlast;
+ logic  o_good,        
+        o_err_mis_tlast,  
+        o_err_unx_tlast;
 
 reg [7 : 0] o_len;
 
