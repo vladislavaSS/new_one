@@ -92,21 +92,21 @@ initial begin
         t_axil_init;
 
         #5;
-        o_length = 5;
+        o_length = 0/*5*/;
         t_axil_wr(.ADDR(LEN_ADDR), .DATA(o_length));
 		t_axil_rd(.ADDR(ERR_ADDR), .DATA(w_err));
 		#5;
-        t_axil_wr(.ADDR(LEN_ADDR), .DATA(o_length + 1));
+        t_axil_wr(.ADDR(LEN_ADDR), .DATA(o_length /*+ 1*/));
 		t_axil_rd(.ADDR(ERR_ADDR), .DATA(w_err));
 		#5;
-		t_axil_wr(.ADDR(LEN_ADDR), .DATA(o_length + 2));
+		t_axil_wr(.ADDR(LEN_ADDR), .DATA(o_length /*+ 2*/));
 		t_axil_rd(.ADDR(ERR_ADDR), .DATA(w_err));
 		#5;
-		t_axil_wr(.ADDR(LEN_ADDR), .DATA(o_length + 3));
+		t_axil_wr(.ADDR(LEN_ADDR), .DATA(o_length /*+ 3*/));
 		t_axil_rd(.ADDR(ERR_ADDR), .DATA(w_err));
 
 		#10;
-        o_length = 8;
+        o_length = 0/*8*/;
         //t_axil_wr(.ADDR(LEN1_ADDR), .DATA(o_length));
 		t_axil_rd(.ADDR(ERR_ADDR), .DATA(w_err));
 

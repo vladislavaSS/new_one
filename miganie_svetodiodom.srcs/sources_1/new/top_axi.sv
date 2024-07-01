@@ -33,7 +33,7 @@ if_axis #(.N(G_BYT)) sl_axis (); // создание интерфейса
         .i_rst   (i_rst [0]    ),  
         .i_clk   (i_clk        ), 
         .m_axis  (ms_axis      ),
-        .length  (i_length/*10*/           )
+        .length  (i_length     )
     );
 
 (* keep_hierarchy="yes" *) 
